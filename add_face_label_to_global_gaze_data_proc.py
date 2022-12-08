@@ -1,10 +1,6 @@
-# This is a sample Python script.
-
-# Press ⌃R to execute it or replace it with your code.
-# Press Double ⇧ to search everywhere for classes, files, tool windows, actions, and settings.
+#This scritp generates a new csv file with face labels to the training data.
+#Where: -1 -> not defined, 1 -> cheeks, 2 -> ears, 3 -> eyes, 4 -> forehead, 5 -> hair, 6 -> jaw, 7 -> mouth, 8 -> nose, -2 -> boundary case
 import csv
-import math
-
 import cv2
 from csv import reader
 
@@ -96,7 +92,7 @@ def in_nose_area(x,y):
         return True
     return False
 # Determine the area on which a given point is.
-# Where -1 -> not defined, 1 -> cheeks, 2 -> ears, 3 -> eyes, 4 -> forehead, 5 -> hair, 6 -> jaw, 7 -> mouth, 8 -> nose
+# Where -1 -> not defined, 1 -> cheeks, 2 -> ears, 3 -> eyes, 4 -> forehead, 5 -> hair, 6 -> jaw, 7 -> mouth, 8 -> nose, -2 -> boundary case
 def register_point(x,y):
     image_cor = global_to_local(x,y)
     if image_cor == -1:
@@ -120,7 +116,7 @@ def register_point(x,y):
     else:
         return -2
 
-# Press the green button in the gutter to run the script.
+
 if __name__ == '__main__':
     #read eight masks and resize them to 500x500
     path_to_the_masks = '/Users/xinpang/Desktop/Studium/Informatik M.sc/2.Semester/MPL/project/Data/facemaker_segmentations'
@@ -132,6 +128,7 @@ if __name__ == '__main__':
     jaw_mask = cv2.imread(f'{path_to_the_masks}/jaw_mask.png',0)
     mouth_mask = cv2.imread(f'{path_to_the_masks}/mouth_mask.png',0)
     nose_mask = cv2.imread(f'{path_to_the_masks}/nose_mask.png',0)
+
 
     mask_size=(eyes_mask.shape[0],eyes_mask.shape[1])
     target_size=(500,500)
@@ -157,7 +154,7 @@ if __name__ == '__main__':
     # print('in mouth area:', in_mouth_area(cor[0],cor[1]))
     # print('in nose area:', in_nose_area(cor[0], cor[1]))
 
-    #read csv file:
+    #read csv file and generate a new csv file with attached face labels.:
     path_to_the_gaze_data = '/Users/xinpang/Desktop/Studium/Informatik M.sc/2.Semester/MPL/project/Data/gaze_data/train/0'
     with open(f'{path_to_the_gaze_data}/global_gaze_data_proc.csv', 'r') as read_obj:
         global_cor = (-1,-1)
@@ -165,7 +162,7 @@ if __name__ == '__main__':
         with open(f'{path_to_the_gaze_data}/labled_global_gaze_data_proc.csv', 'w') as new_file:
             csv_writer = csv.writer(new_file)
             for row in csv_reader:
-                global_cor = (math.floor(float(row[1])),math.floor(float(row[2])))
+                global_cor = (round(float(row[1])),round(float(row[2])))
                 area = register_point(global_cor[0],global_cor[1])
                 row.append(area)
                 csv_writer.writerow(row)
